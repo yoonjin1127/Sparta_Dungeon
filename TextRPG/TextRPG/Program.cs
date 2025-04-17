@@ -2,13 +2,16 @@
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
+using Newtonsoft;
 
 namespace TextRPG
 {
    
     internal class Program
     {
+        // 파일 저장 경로
+        public static string path = AppDomain.CurrentDomain.BaseDirectory;
         static Inventory inventory = new Inventory();
         static List<Item> storeItems = new List<Item>();
 
@@ -17,18 +20,6 @@ namespace TextRPG
             InitializeStore();
             Player player = CreatePlayer();
             EnterVillage(player);
-        }
-
-        // 게임 오버
-        static void GameOver(Player player)
-        {
-            Console.WriteLine("체력이 0이 되었습니다...");
-            Console.WriteLine("<게임 오버>");
-            Console.WriteLine();
-            Console.WriteLine("Enter를 누르면 마을로 돌아갑니다.");
-            Console.ReadLine();
-            EnterVillage(player);
-
         }
 
         // 상점 초기화
@@ -87,7 +78,7 @@ namespace TextRPG
         }
 
         // 직업 유형
-        enum JobType
+        public enum JobType
         {
             None = 0,
             전사 = 1,
@@ -96,14 +87,14 @@ namespace TextRPG
         }
 
         // 장비 유형
-        enum EquipmentType
+        public enum EquipmentType
         {
             Weapon,
             Armor
         }
 
         // 던전 유형
-        enum DungeonType
+        public enum DungeonType
         {
             쉬운,
             일반,
@@ -176,7 +167,7 @@ namespace TextRPG
             Console.WriteLine("현재 플레이어의 정보입니다.");
             Console.WriteLine();
             Console.WriteLine($"Lv. {player.level}");
-            Console.WriteLine($"{player.name} ({player.job})");
+            Console.WriteLine($"{player.name} ({player.Job})");
             Console.WriteLine($"공격력          : {player.attack}");
             Console.WriteLine($"방어력          : {player.defense}");
             Console.WriteLine($"체력            : {player.health}");
@@ -569,29 +560,32 @@ namespace TextRPG
 
 
 
-        
+
 
         // 플레이어 상태 및 능력치, 장비 클래스
-        class Player
+        [Serializable]
+        public class Player
         {
-            public string name;
-            public int level;
-            public int exp;
-            int clearCount = 0;
-            public JobType job;
-            public float attack;
-            public float defense;
-            public float health;
-            public int gold;
-            public Equipment weapon;
-            public Equipment armor;
+            // name = 김태식; >> 프로퍼티 처리함 >> string int 이런애들은 괜찮음 > Equipment class 
+            public string name { get; set; }
+            public int level { get; set; }
+            public int exp { get; set; }
+            public int clearCount { get; set; }
+            public JobType Job { get; set; }
+            public float attack { get; set; }
+            public float defense { get; set; }
+            public float health { get; set; }
+            public int gold { get; set; }
+            public Equipment weapon { get; set; }
+            public Equipment armor { get; set; }
 
             // 초기 이름, 직업 설정을 위한 생성자
+            
             public Player(string name, JobType job)
             {
                 this.name = name;
                 this.level = 1;
-                this.job = job;
+                this.Job = job;
                 this.gold = 500;
                 this.exp = 0;
 
@@ -770,7 +764,7 @@ namespace TextRPG
         }
 
         // 아이템 추상 클래스 
-        abstract class Item
+        public abstract class Item
         {
             // 이름과 가격은 공통으로 가져야 한다
             public string Name { get; set; }
@@ -802,7 +796,8 @@ namespace TextRPG
         }
 
         // 무기 클래스
-        class Equipment : Item, IEquipable
+        [Serializable]
+        public class Equipment : Item, IEquipable
         {
             public EquipmentType Type { get; set; }
             public int AttackAmount { get; set; }
@@ -874,6 +869,29 @@ namespace TextRPG
         {
             // 장착 메서드
             void Equip(Player player);
+        }
+
+
+        // 게임 오버
+        static void GameOver(Player player)
+        {
+            Console.WriteLine("체력이 0이 되었습니다...");
+            Console.WriteLine("<게임 오버>");
+            Console.WriteLine();
+            Console.WriteLine("Enter를 누르면 마을로 돌아갑니다.");
+            Console.ReadLine();
+            EnterVillage(player);
+
+        }
+
+        public static void SaveData()
+        {
+
+        }
+
+        public static void LoadData()
+        {
+
         }
     }
 }
