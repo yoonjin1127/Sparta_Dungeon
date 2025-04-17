@@ -11,7 +11,7 @@ namespace TextRPG
     internal class Program
     {
         // 파일 저장 경로
-        public static string path = AppDomain.CurrentDomain.BaseDirectory;
+        //public static string path = AppDomain.CurrentDomain.BaseDirectory;
         static Inventory inventory = new Inventory();
         static List<Item> storeItems = new List<Item>();
 
@@ -19,8 +19,10 @@ namespace TextRPG
         {
             Player player;
 
+            string path = Path.Combine(Environment.CurrentDirectory, "player_save.json");
+
             // 세이브 파일이 존재한다면 로드, 없다면 새로 생성
-            if (File.Exists("player_save.txt"))
+            if (File.Exists(path))
             {
                 player = LoadPlayer();
             }
@@ -904,16 +906,17 @@ namespace TextRPG
 
         public static void SavePlayer(Player player)
         {
-            string path = "player_save.json";
+            string path = Path.Combine(Environment.CurrentDirectory, "player_save.json");
             string json = JsonConvert.SerializeObject(player, Formatting.Indented);
             File.WriteAllText(path, json);
             Console.WriteLine("파일이 저장되었습니다.");
+            Console.WriteLine("저장 경로: " + path);
         }
 
         public static Player LoadPlayer()
         {
-            string path = "player_save.json";
-            if(!File.Exists(path))
+            string path = Path.Combine(Environment.CurrentDirectory, "player_save.json");
+            if (!File.Exists(path))
             {
                 Console.WriteLine("저장된 파일이 없습니다.");
                 return null;
