@@ -3,7 +3,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
-using Newtonsoft;
+using Newtonsoft.Json;
 
 namespace TextRPG
 {
@@ -17,13 +17,23 @@ namespace TextRPG
 
         static void Main(string[] args)
         {
+            Player player;
+
+            // 세이브 파일이 존재한다면 로드, 없다면 새로 생성
+            if (File.Exists("player_save.txt"))
+            {
+                player = LoadPlayer();
+            }
+            else
+            {
+                player = CreatePlayer();
+            }
             InitializeStore();
-            Player player = CreatePlayer();
             EnterVillage(player);
         }
 
-        // 상점 초기화
-        static void InitializeStore()
+            // 상점 초기화
+            static void InitializeStore()
         {
             storeItems.Add(new Potion("작은 체력 포션", 50, 30));
             storeItems.Add(new Potion("중간 체력 포션", 100, 60));
@@ -44,6 +54,7 @@ namespace TextRPG
             Console.WriteLine("3. 상점");
             Console.WriteLine("4. 던전입장");
             Console.WriteLine("5. 휴식하기");
+            Console.WriteLine("6. 저장하기");
             Console.WriteLine();
             Console.WriteLine("원하시는 행동을 입력해주세요.");
             Console.Write(">> ");
@@ -68,6 +79,13 @@ namespace TextRPG
                         break;
                     case "5":
                          Rest(player);
+                        break;
+                    case "6":
+                        SavePlayer(player);
+                        Console.WriteLine("Enter를 눌러주세요.");
+                        Console.ReadLine();
+                        Console.Clear();
+                        EnterVillage(player);
                         break;
                     default:
                         Console.WriteLine("잘못된 입력입니다.");
@@ -884,14 +902,26 @@ namespace TextRPG
 
         }
 
-        public static void SaveData()
+        public static void SavePlayer(Player player)
         {
-
+            string path = "player_save.json";
+            string json = JsonConvert.SerializeObject(player, Formatting.Indented);
+            File.WriteAllText(path, json);
+            Console.WriteLine("파일이 저장되었습니다.");
         }
 
-        public static void LoadData()
+        public static Player LoadPlayer()
         {
-
+            string path = "player_save.json";
+            if(!File.Exists(path))
+            {
+                Console.WriteLine("저장된 파일이 없습니다.");
+                return null;
+            }
+            string json = File.ReadAllText(path);
+            Player player = JsonConvert.DeserializeObject<Player>(json);
+            Console.WriteLine("저장된 파일을 불러왔습니다.");
+            return player;
         }
     }
 }
