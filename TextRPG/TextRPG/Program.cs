@@ -899,8 +899,33 @@ namespace TextRPG
             Console.WriteLine("<게임 오버>");
             Console.WriteLine();
             Console.WriteLine("Enter를 누르면 마을로 돌아갑니다.");
-            Console.ReadLine();
-            EnterVillage(player);
+            Console.WriteLine("ESC키를 누르면 종료합니다.");
+
+            do
+            {
+                // 마을 복귀
+                if (Console.ReadKey().Key == ConsoleKey.Enter)
+                {
+                    Console.Clear();
+                    EnterVillage(player);
+                    return;
+                }
+
+                // 게임 종료
+                else if (Console.ReadKey().Key == ConsoleKey.Escape)
+                {
+                    Console.Clear();
+                    Console.WriteLine("게임을 종료합니다.");
+                    Environment.Exit(0);
+                    break;
+                }
+
+                else
+                {
+                    Console.WriteLine("잘못된 입력입니다.");
+                    continue;
+                }
+            } while (true);
 
         }
 
